@@ -1,0 +1,21 @@
+{% import_yaml 'profile/defaults.yaml' as default_settings %}
+
+{% set kernel_map = salt['grains.filter_by']({
+  'default': {
+    'locations': {
+      'profile': '/etc/profile',
+      'profile_d': '/etc/profile.d',
+      'skel': '/etc/skel'
+    },
+  },
+}, grain='profile', default='default', merge=salt['pillar.get']('profile:lookup', {}))
+%}
+
+{% do default_settings.profile.lookup.update(kernel_map) %}
+
+{% set profile_settings = salt['pillar.get'](
+    'profile',
+    default=default_settings.profile,
+    merge=True
+  )
+%}
